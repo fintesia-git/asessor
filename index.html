@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Interactivo: Leche de Vaca vs. Leche de Almendras</title>
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: He diseñado la aplicación como un panel de control temático de una sola página en lugar de un informe lineal. La estructura incluye: 1. Un encabezado y una navegación fija para un acceso rápido. 2. Una sección de 'Comparativa Clave' con un interruptor interactivo para cambiar entre 'Nutrición' e 'Impacto Ambiental', permitiendo una comparación directa y visual. 3. Una sección de 'Tendencias del Mercado' que utiliza gráficos y tarjetas de estadísticas para visualizar el cambio en el consumo. 4. Una sección de 'El Consumidor Decide' con iconos interactivos para explorar las motivaciones de los consumidores de forma atractiva. 5. Una sección de 'Análisis de Precios' que organiza los factores complejos en columnas fáciles de digerir. Esta estructura fue elegida porque descompone la información densa en fragmentos manejables e interactivos, guiando al usuario a través de una historia de datos desde la comparación directa hasta las razones subyacentes, mejorando la usabilidad y la retención de la información. -->
+    <!-- Visualization & Content Choices: 1. Comparación Nutricional: (Objetivo: Comparar) Se utiliza un gráfico de barras agrupadas de Chart.js para comparar directamente los principales nutrientes (calorías, proteínas, grasas). La interacción mediante tooltips proporciona valores exactos. Esta visualización es más efectiva que una tabla estática para una comparación rápida. 2. Impacto Ambiental: (Objetivo: Comparar) Un gráfico de barras simple muestra la drástica diferencia en el uso del agua, un punto clave del informe. Es directo y de alto impacto. 3. Tendencias de Consumo: (Objetivo: Mostrar Cambio) Un gráfico de líneas para el consumo de leche de vaca ilustra la tendencia a la baja a lo largo del tiempo. Tarjetas de estadísticas para la leche de almendras resaltan su crecimiento (CAGR, penetración), haciendo que las cifras clave sean inmediatamente visibles. 4. Razones del Consumidor: (Objetivo: Organizar/Informar) Se utiliza un conjunto interactivo de iconos y texto en HTML/JS. Esto convierte una lista estática de razones en un elemento de descubrimiento, mejorando el compromiso. 5. Factores de Precio: (Objetivo: Organizar) Listas con formato en HTML/Tailwind para presentar los factores de forma clara y paralela. Todas las visualizaciones utilizan Chart.js (Canvas) y HTML/CSS, como se requiere. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF5;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #C1A57B;
+            border-bottom-color: #C1A57B;
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: #8D7B68;
+            color: #FFFFFF;
+        }
+        .reason-icon.active {
+            background-color: #C1A57B;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#8D7B68]">Leche de Vaca vs. Almendras</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#comparativa" class="nav-link font-semibold pb-1 border-b-2 border-transparent">Comparativa</a>
+                <a href="#mercado" class="nav-link font-semibold pb-1 border-b-2 border-transparent">Mercado</a>
+                <a href="#consumidor" class="nav-link font-semibold pb-1 border-b-2 border-transparent">Consumidor</a>
+                <a href="#precios" class="nav-link font-semibold pb-1 border-b-2 border-transparent">Precios</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="hero" class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#8D7B68] mb-4">La Batalla en el Vaso</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                El consumo de leche de vaca tradicional está en declive mientras que las alternativas vegetales, como la leche de almendras, crecen sin parar. Explora interactivamente los datos detrás de este cambio fundamental en nuestras dietas.
+            </p>
+        </section>
+
+        <section id="comparativa" class="mb-20 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center text-[#8D7B68] mb-2">Comparativa Clave</h3>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">La elección va más allá del sabor. Analiza las diferencias fundamentales en nutrición e impacto ambiental que guían la decisión del consumidor. Haz clic para cambiar de vista.</p>
+            <div class="flex justify-center mb-8">
+                <div class="bg-gray-200 rounded-full p-1 flex space-x-1">
+                    <button id="btn-nutricion" class="tab-button active text-sm md:text-base font-semibold px-4 py-2 rounded-full">Nutrición</button>
+                    <button id="btn-impacto" class="tab-button text-sm md:text-base font-semibold px-4 py-2 rounded-full">Impacto Ambiental</button>
+                </div>
+            </div>
+
+            <div id="content-nutricion">
+                <div class="grid md:grid-cols-2 gap-8 items-center mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <h4 class="text-xl font-bold mb-3 text-blue-600">Leche de Vaca (Entera)</h4>
+                        <p class="text-gray-600">Fuente robusta de nutrientes, ideal para el crecimiento, pero con más calorías, grasas saturadas y lactosa.</p>
+                        <ul class="mt-4 space-y-2">
+                            <li class="flex items-center"><span class="text-blue-500 mr-2">●</span><strong class="w-24">Proteínas:</strong> ~9 g</li>
+                            <li class="flex items-center"><span class="text-blue-500 mr-2">●</span><strong class="w-24">Calorías:</strong> ~150-259 kcal</li>
+                            <li class="flex items-center"><span class="text-blue-500 mr-2">●</span><strong class="w-24">Grasas:</strong> ~11 g</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <h4 class="text-xl font-bold mb-3 text-amber-700">Leche de Almendras (sin azúcar)</h4>
+                        <p class="text-gray-600">Baja en calorías y sin grasas saturadas. Menos proteína, pero a menudo fortificada con calcio y vitaminas.</p>
+                        <ul class="mt-4 space-y-2">
+                            <li class="flex items-center"><span class="text-amber-600 mr-2">●</span><strong class="w-24">Proteínas:</strong> ~1 g</li>
+                            <li class="flex items-center"><span class="text-amber-600 mr-2">●</span><strong class="w-24">Calorías:</strong> ~29 kcal</li>
+                             <li class="flex items-center"><span class="text-amber-600 mr-2">●</span><strong class="w-24">Grasas:</strong> ~2.5 g</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="chart-container bg-white p-4 rounded-xl shadow-md">
+                    <canvas id="nutricionChart"></canvas>
+                </div>
+            </div>
+
+            <div id="content-impacto" class="hidden">
+                 <div class="grid md:grid-cols-2 gap-8 items-center mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <h4 class="text-xl font-bold mb-3 text-blue-600">Leche de Vaca</h4>
+                        <p class="text-gray-600">Su producción requiere una cantidad significativamente mayor de agua y tierra, y genera más emisiones de efecto invernadero.</p>
+                         <ul class="mt-4 space-y-2">
+                            <li class="flex items-center"><span class="font-bold text-4xl text-blue-500 mr-4">💧</span><div><strong class="block">Uso de Agua:</strong>~1000 Litros / L de leche</div></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                         <h4 class="text-xl font-bold mb-3 text-amber-700">Leche de Almendras</h4>
+                        <p class="text-gray-600">Aunque su cultivo de almendras consume agua, su huella hídrica y de carbono es considerablemente menor que la de la leche de vaca.</p>
+                         <ul class="mt-4 space-y-2">
+                            <li class="flex items-center"><span class="font-bold text-4xl text-green-500 mr-4">💧</span><div><strong class="block">Uso de Agua:</strong>~371 Litros / L de leche</div></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="chart-container bg-white p-4 rounded-xl shadow-md">
+                    <canvas id="impactoChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="mercado" class="mb-20 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center text-[#8D7B68] mb-2">Tendencias del Mercado</h3>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Los números son claros: el mercado está cambiando. Mientras un gigante tradicional retrocede, una nueva categoría de productos vegetales avanza a pasos agigantados.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="text-xl font-bold mb-4">📉 Descenso de la Leche de Vaca</h4>
+                     <p class="text-gray-600 mb-4">El consumo de leche entera en España ha caído drásticamente en las últimas dos décadas, especialmente entre los más jóvenes.</p>
+                    <div class="chart-container h-64 md:h-72">
+                        <canvas id="consumoVacaChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md flex flex-col justify-center">
+                    <h4 class="text-xl font-bold mb-4">📈 Auge de las Alternativas Vegetales</h4>
+                    <p class="text-gray-600 mb-6">El mercado global de leche de almendras no solo crece, sino que se proyecta una expansión acelerada, impulsada por una fuerte demanda de los consumidores.</p>
+                    <div class="space-y-4">
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <div class="font-bold text-3xl text-green-800">+11.85%</div>
+                            <div class="text-green-700">Crecimiento anual compuesto (CAGR) proyectado para la leche de almendras (2024-2029).</div>
+                        </div>
+                        <div class="bg-amber-100 p-4 rounded-lg">
+                            <div class="font-bold text-3xl text-amber-800">40.4%</div>
+                            <div class="text-amber-700">De los hogares españoles compraron leche vegetal en 2023.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="consumidor" class="mb-20 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center text-[#8D7B68] mb-2">El Consumidor Decide</h3>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">No hay una sola razón, sino una convergencia de factores que motivan el cambio. Haz clic en cada icono para descubrir por qué los consumidores eligen alternativas vegetales.</p>
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button class="reason-icon active flex items-center space-x-2 p-3 bg-gray-200 rounded-full" data-reason="salud">
+                    <span class="text-2xl">❤️</span><span class="hidden md:inline font-semibold">Salud y Nutrición</span>
+                </button>
+                <button class="reason-icon flex items-center space-x-2 p-3 bg-gray-200 rounded-full" data-reason="alergias">
+                    <span class="text-2xl">🚫</span><span class="hidden md:inline font-semibold">Alergias e Intolerancias</span>
+                </button>
+                <button class="reason-icon flex items-center space-x-2 p-3 bg-gray-200 rounded-full" data-reason="ambiente">
+                     <span class="text-2xl">🌍</span><span class="hidden md:inline font-semibold">Sostenibilidad y Ética</span>
+                </button>
+                <button class="reason-icon flex items-center space-x-2 p-3 bg-gray-200 rounded-full" data-reason="dieta">
+                    <span class="text-2xl">🌱</span><span class="hidden md:inline font-semibold">Estilo de Vida y Dieta</span>
+                </button>
+            </div>
+            <div id="reason-content" class="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto min-h-[180px]">
+            </div>
+        </section>
+
+        <section id="precios" class="mb-16 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center text-[#8D7B68] mb-2">Análisis de Precios</h3>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">El coste final de cada leche depende de cadenas de suministro muy diferentes, desde el campo hasta el supermercado. Ambos precios son vulnerables a factores climáticos y de mercado.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="text-xl font-bold mb-4 text-blue-600">Factores de Precio: Leche de Vaca</h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li><strong class="text-gray-800">Costo de Alimentación:</strong> Precio del forraje y materias primas para el ganado.</li>
+                        <li><strong class="text-gray-800">Costos Energéticos:</strong> Electricidad y combustible para la operación de la granja.</li>
+                        <li><strong class="text-gray-800">Clima:</strong> Sequías u olas de calor que afectan los cultivos para el ganado.</li>
+                        <li><strong class="text-gray-800">Políticas Agrícolas:</strong> Precios mínimos y subsidios gubernamentales.</li>
+                        <li><strong class="text-gray-800">Demanda Inelástica:</strong> Al ser un bien básico, su consumo varía poco con el precio.</li>
+                    </ul>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="text-xl font-bold mb-4 text-amber-700">Factores de Precio: Leche de Almendras</h4>
+                     <ul class="space-y-3 text-gray-700">
+                        <li><strong class="text-gray-800">Costo de la Almendra:</strong> Depende de la cosecha, mano de obra y fertilizantes.</li>
+                        <li><strong class="text-gray-800">Consumo de Agua:</strong> Costo del riego en regiones productoras como California.</li>
+                        <li><strong class="text-gray-800">Clima:</strong> Heladas o calor extremo que afectan la cosecha de almendras.</li>
+                        <li><strong class="text-gray-800">Oferta y Demanda Global:</strong> Popularidad de dietas basadas en plantas.</li>
+                        <li><strong class="text-gray-800">Demanda Elástica:</strong> Al tener sustitutos (otras leches vegetales), su demanda es más sensible al precio.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#8D7B68] text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h3 class="text-xl font-bold mb-2">Conclusión en Pocas Palabras</h3>
+            <p class="max-w-3xl mx-auto text-gray-200">
+                La leche de almendras crece a expensas de la de vaca, actuando como un sustituto funcional para muchos consumidores, aunque no sea un equivalente nutricional directo. El mercado se dirige hacia una coexistencia donde la salud, la ética y la sostenibilidad definirán cada vez más las elecciones en el pasillo de los lácteos.
+            </p>
+            <p class="text-sm mt-6 text-gray-400">Aplicación interactiva creada a partir del informe "Dinámicas del Mercado Lácteo y de Bebidas Vegetales".</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const commonChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: 'Inter',
+                                size: 12,
+                            },
+                            color: '#4A4A4A'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#4A4A4A',
+                        titleFont: { family: 'Inter', weight: 'bold', size: 14 },
+                        bodyFont: { family: 'Inter', size: 12 },
+                        padding: 10,
+                        cornerRadius: 4
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                           font: { family: 'Inter', size: 12 },
+                           color: '#6b7280'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e5e7eb'
+                        },
+                         ticks: {
+                           font: { family: 'Inter', size: 12 },
+                           color: '#6b7280'
+                        }
+                    }
+                }
+            };
+            
+            let nutricionChartInstance, impactoChartInstance, consumoVacaChartInstance;
+
+            const nutricionData = {
+                labels: ['Calorías (kcal)', 'Proteína (g)', 'Grasa (g)'],
+                datasets: [{
+                    label: 'Leche de Vaca (Entera)',
+                    data: [150, 9, 11],
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }, {
+                    label: 'Leche de Almendras',
+                    data: [29, 1, 2.5],
+                    backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                    borderColor: 'rgba(217, 119, 6, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            };
+
+            const impactoData = {
+                labels: ['Leche de Vaca', 'Leche de Almendras', 'Leche de Avena', 'Leche de Soja'],
+                datasets: [{
+                    label: 'Litros de agua por Litro de leche',
+                    data: [1000, 371, 48, 270],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(217, 119, 6, 0.7)',
+                        'rgba(107, 114, 128, 0.7)',
+                        'rgba(34, 197, 94, 0.7)',
+                    ],
+                    borderColor: [
+                         'rgba(59, 130, 246, 1)',
+                        'rgba(217, 119, 6, 1)',
+                        'rgba(107, 114, 128, 1)',
+                        'rgba(34, 197, 94, 1)',
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            };
+            
+            const consumoVacaData = {
+                labels: ['Año 2000', 'Año 2021'],
+                datasets: [{
+                    label: 'Consumo per cápita (Litros)',
+                    data: [49, 19],
+                    fill: true,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    tension: 0.1,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointRadius: 5
+                }]
+            };
+
+            const reasons = {
+                salud: {
+                    title: '❤️ Salud y Nutrición',
+                    text: 'Muchos consumidores buscan opciones más ligeras, bajas en calorías y sin grasas saturadas ni colesterol. La leche de almendras se percibe como una alternativa "más sana", especialmente para el control de peso, a pesar de su menor contenido proteico.'
+                },
+                alergias: {
+                    title: '🚫 Alergias e Intolerancias',
+                    text: 'Es la razón más común. Se estima que hasta el 68% de la población mundial tiene algún grado de intolerancia a la lactosa. Para ellos, las bebidas vegetales no son una opción, sino una necesidad para evitar malestar digestivo.'
+                },
+                ambiente: {
+                    title: '🌍 Sostenibilidad y Ética',
+                    text: 'Crece la conciencia sobre el alto impacto ambiental de la ganadería (uso de agua, emisiones de GEI, deforestación). Los consumidores eligen alternativas con menor huella ecológica, impulsados también por preocupaciones sobre el bienestar animal en granjas industriales.'
+                },
+                dieta: {
+                    title: '🌱 Estilo de Vida y Dieta',
+                    text: 'La adopción de dietas veganas, vegetarianas o flexitarianas es un motor clave. Estos estilos de vida excluyen o reducen los productos de origen animal, convirtiendo a las leches vegetales en un alimento básico y coherente con sus valores.'
+                }
+            };
+
+            function createNutricionChart() {
+                const ctx = document.getElementById('nutricionChart').getContext('2d');
+                if(nutricionChartInstance) nutricionChartInstance.destroy();
+                nutricionChartInstance = new Chart(ctx, { type: 'bar', data: nutricionData, options: commonChartOptions });
+            }
+
+            function createImpactoChart() {
+                const ctx = document.getElementById('impactoChart').getContext('2d');
+                 if(impactoChartInstance) impactoChartInstance.destroy();
+                const impactoOptions = { ...commonChartOptions };
+                impactoOptions.plugins.legend.display = false;
+                impactoChartInstance = new Chart(ctx, { type: 'bar', data: impactoData, options: impactoOptions });
+            }
+            
+            function createConsumoVacaChart(){
+                const ctx = document.getElementById('consumoVacaChart').getContext('2d');
+                 if(consumoVacaChartInstance) consumoVacaChartInstance.destroy();
+                const consumoOptions = { ...commonChartOptions };
+                consumoOptions.plugins.legend.display = false;
+                consumoOptions.scales.y.title = { display: true, text: 'Litros per cápita/año' };
+                consumoVacaChartInstance = new Chart(ctx, { type: 'line', data: consumoVacaData, options: consumoOptions });
+            }
+
+            const btnNutricion = document.getElementById('btn-nutricion');
+            const btnImpacto = document.getElementById('btn-impacto');
+            const contentNutricion = document.getElementById('content-nutricion');
+            const contentImpacto = document.getElementById('content-impacto');
+
+            btnNutricion.addEventListener('click', () => {
+                btnNutricion.classList.add('active');
+                btnImpacto.classList.remove('active');
+                contentNutricion.classList.remove('hidden');
+                contentImpacto.classList.add('hidden');
+                createNutricionChart();
+            });
+
+            btnImpacto.addEventListener('click', () => {
+                btnImpacto.classList.add('active');
+                btnNutricion.classList.remove('active');
+                contentImpacto.classList.remove('hidden');
+                contentNutricion.classList.add('hidden');
+                createImpactoChart();
+            });
+
+            const reasonIcons = document.querySelectorAll('.reason-icon');
+            const reasonContent = document.getElementById('reason-content');
+
+            function updateReasonContent(reasonKey) {
+                const reason = reasons[reasonKey];
+                reasonContent.innerHTML = `
+                    <h4 class="text-xl font-bold mb-3 text-[#8D7B68]">${reason.title}</h4>
+                    <p class="text-gray-600">${reason.text}</p>
+                `;
+                reasonIcons.forEach(icon => {
+                    icon.classList.remove('active');
+                    if(icon.dataset.reason === reasonKey) {
+                        icon.classList.add('active');
+                    }
+                });
+            }
+
+            reasonIcons.forEach(icon => {
+                icon.addEventListener('click', () => {
+                    updateReasonContent(icon.dataset.reason);
+                });
+            });
+            
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach( section => {
+                    const sectionTop = section.offsetTop;
+                    if(pageYOffset >= sectionTop - 150){
+                        current = section.getAttribute('id');
+                    }
+                })
+
+                navLinks.forEach( link => {
+                    link.classList.remove('active');
+                    if(link.getAttribute('href').includes(current)){
+                        link.classList.add('active');
+                    }
+                })
+            });
+
+            createNutricionChart();
+            createConsumoVacaChart();
+            updateReasonContent('salud');
+        });
+    </script>
+</body>
+</html>
