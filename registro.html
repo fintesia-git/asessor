@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7f8;
+      margin: 0; padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    form {
+      background: white;
+      padding: 2rem 3rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    h2 {
+      margin-bottom: 1rem;
+      color: #333;
+      text-align: center;
+    }
+    .step {
+      display: none;
+      flex-direction: column;
+    }
+    .step.active {
+      display: flex;
+    }
+    .options {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .option-box {
+      flex: 1;
+      border-radius: 10px;
+      padding: 1.5rem;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .option-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .option-box.selected {
+      box-shadow: 0 0 0 4px #27ae60;
+      transform: translateY(-5px);
+    }
+    .option-box img {
+      max-width: 80px;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #555;
+      margin-top: 1rem;
+    }
+    label:first-child {
+        margin-top: 0;
+    }
+    textarea, select, input[type="text"], input[type="email"], input[type="number"] {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 1rem;
+      background-color: #fff;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+    }
+    button {
+      background: #27ae60;
+      border: none;
+      color: white;
+      padding: 0.8rem 1.8rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:disabled {
+      background: #a5d6a7;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background: #1e8449;
+    }
+  </style>
+</head>
+<body>
+  <form id="multiStepForm" action="https://formspree.io/f/xyzngggp" method="POST">
+    <h2>Registrate</h2>
+
+    <div class="step active" data-step="1">
+      <label>¿Que relación te gustaría que tengamos?</label>
+      <div class="options" id="controlOptions">
+        <div class="option-box" data-value="control_total" style="background:#3498db;">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/checked--v1.png" alt="Control total" />
+          <strong>Control total</strong>
+          <small>Hablamos periódicamente, pero no opero a tu nombre. Solo doy sugerencias.</small>
+        </div>
+        <div class="option-box" data-value="tercero_total" style="background:#00c44b;">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/handshake.png" alt="Tercero total" />
+          <strong>Delegación total</strong>
+          <small>Opero tu cartera completamente, solo te informo de los movimientos importantes - podés retirar cuando quieras.</small>
+        </div>
+        <div class="option-box" data-value="parcial" style="background:#f39c12;">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/settings.png" alt="Parcial" />
+          <strong>Parcial</strong>
+          <small>Lo definimos juntos. Aprendés y operamos.</small>
+        </div>
+      </div>
+      <input type="hidden" name="control" id="controlInput" required />
+    </div>
+
+    <div class="step" data-step="2">
+      <label for="origen_dinero">Cuál es el origen del dinero que usarás para invertir?</label>
+      <select id="origen_dinero" name="origen_dinero" required>
+        <option value="" disabled selected>Selecciona una opción</option>
+        <option value="Trabajo">Trabajo</option>
+        <option value="Ahorros">Ahorros</option>
+        <option value="Mensualidad">Mensualidad</option>
+        <option value="Regalos">Regalos/Herencia</option>
+      </select>
+
+      <label for="planes_futuros">Tenés planes futuros o eventos para este dinero?</label>
+      <select id="planes_futuros" name="planes_futuros" required>
+        <option value="" disabled selected>Selecciona una opción</option>
+        <option value="Corto plazo (menos de 1 año)">Si, en el corto plazo (Menos de 1 año)</option>
+        <option value="Largo plazo">Si, en el largo plazo</option>
+        <option value="Sin destino definido">No, aún no tiene un destino definido</option>
+      </select>
+    </div>
+
+    <div class="step" data-step="3">
+      <label for="intereses">Areas de interés - Relacionado a tu trabajo o carrera</label>
+      <select id="intereses" name="intereses" required>
+        <option value="" disabled selected>Selecciona un sector de interés</option>
+        <option value="Finanzas">Finanzas</option>
+        <option value="Tecnologia">Tecnología</option>
+        <option value="Salud">Salud</option>
+        <option value="Industria">Industria</option>
+        <option value="Comercio y Consumo">Comercio y Consumo</option>
+        <option value="Construccion">Construcción</option>
+        <option value="Energia">Energía</option>
+        <option value="Agro">Agro</option>
+        <option value="Otro">Otro / No estoy seguro</option>
+      </select>
+
+      <label for="rango_inversion">Monto estimado a invertir conmigo</label>
+      <select id="rango_inversion" name="rango_inversion" required>
+        <option value="" disabled selected>Selecciona un rango</option>
+        <option value="0 - 500k">0 a 500k</option>
+        <option value="500k - 2.5m">500k a 2.5m</option>
+        <option value="2.5m+">2.5m o más</option>
+      </select>
+    </div>
+
+    <div class="step" data-step="4">
+      <label for="nombre">Nombre completo</label>
+      <input type="text" id="nombre" name="nombre" required />
+
+      <label for="email">Mail</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="edad">Edad</label>
+      <input type="number" id="edad" name="edad" min="18" max="120" required />
+    </div>
+
+    <div class="step" data-step="5">
+      <label for="comentarios">Comentarios adicionales (opcional)</label>
+      <textarea id="comentarios" name="comentarios" rows="4" placeholder="Cualquier información extra que quieras compartir"></textarea>
+    </div>
+
+    <div class="buttons">
+      <button type="button" id="prevBtn" disabled>Anterior</button>
+      <button type="button" id="nextBtn">Siguiente</button>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById('multiStepForm');
+    const steps = form.querySelectorAll('.step');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentStep = 0;
+
+    // Control selección tipo de control
+    const controlOptions = document.getElementById('controlOptions');
+    const controlInput = document.getElementById('controlInput');
+
+    controlOptions.addEventListener('click', e => {
+      const box = e.target.closest('.option-box');
+      if (!box) return;
+      // Deseleccionar todos
+      controlOptions.querySelectorAll('.option-box').forEach(el => el.classList.remove('selected'));
+      // Seleccionar el clickeado
+      box.classList.add('selected');
+      controlInput.value = box.getAttribute('data-value');
+    });
+
+    function showStep(n) {
+      steps.forEach((step, i) => {
+        step.classList.toggle('active', i === n);
+      });
+      prevBtn.disabled = n === 0;
+      nextBtn.textContent = n === steps.length - 1 ? 'Enviar' : 'Siguiente';
+    }
+
+    function validateStep() {
+      const activeStep = steps[currentStep];
+      const inputs = activeStep.querySelectorAll('input, textarea, select');
+      for (let input of inputs) {
+        // Usar .checkValidity() para una validación más robusta
+        if (input.hasAttribute('required') && !input.value) {
+           // Obtener la etiqueta asociada al campo
+           const label = document.querySelector(`label[for="${input.id}"]`);
+           const labelText = label ? label.textContent : input.name;
+           alert(`Por favor completa el campo: ${labelText}`);
+           input.focus(); // Poner el foco en el campo vacío
+           return false;
+        }
+      }
+      // Validar que en paso 1 se haya seleccionado una opción
+      if (currentStep === 0 && !controlInput.value) {
+        alert('Por favor selecciona una opción de relación.');
+        return false;
+      }
+      return true;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (!validateStep()) return;
+
+      if (currentStep === steps.length - 1) {
+        // Enviar formulario
+        form.submit();
+      } else {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+
+    showStep(currentStep);
+  </script>
+</body>
+</html>
